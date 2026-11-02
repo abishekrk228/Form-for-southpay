@@ -1,0 +1,28 @@
+[
+  {
+    "id": "rep_1793117639842_1xkg8",
+    "createdAt": "2026-10-27T16:13:59.842Z",
+    "date": "27/10/26",
+    "pay1": "87878",
+    "pay1Profit": "9898",
+    "southpayBilling": "878",
+    "southpayProfit": "8789",
+    "totalProfit": "18687",
+    "yesterdayShortage": "",
+    "amountAvailable": "",
+    "rawReportText": "Daily Report:\nDate:27/10/26\nPay1 : 87878\nProfit: 9898\nSouthpay Billing: 878\nProfit:8789\nTotal  profit:18687\nYesterday shortage:\nAmount Available : "
+  },
+  {
+    "id": "rep_1793117292185_63fas",
+    "createdAt": "2026-10-27T16:08:12.185Z",
+    "date": "12/10/26",
+    "pay1": "52865400",
+    "pay1Profit": "14900",
+    "southpayBilling": "336000",
+    "southpayProfit": "1300",
+    "totalProfit": "16200",
+    "yesterdayShortage": "",
+    "amountAvailable": "53.5L",
+    "rawReportText": "Daily Report:\nDate:12/10/26\nPay1 : 52865400\nProfit: 14900\nSouthpay Billing: 336000\nProfit:1300\nTotal  profit:16200\nYesterday shortage:\nAmount Available : 53.5L"
+  }
+]

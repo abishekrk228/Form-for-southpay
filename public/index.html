@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Report - Billing & Profit Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1>Daily Report Tracker</h1>
+          <p class="subtitle">Quick billing, profit calculation & formatted dispatch</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div id="connectionStatus" class="status-badge checking">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking connection...</span>
+        </div>
+        <button id="themeToggleBtn" class="icon-button" title="Toggle dark/light mode">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-layout">
+      <!-- Left Column: Report Entry Form -->
+      <section class="card form-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="step-num">1</span>
+            <h2>Enter Report Details</h2>
+          </div>
+          <div class="header-actions">
+            <button type="button" id="loadDemoBtn" class="btn btn-outline-sm" title="Fill with demo sample data">
+              Load Demo
+            </button>
+            <button type="button" id="resetFormBtn" class="btn btn-outline-sm" title="Clear inputs">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <form id="dailyReportForm" novalidate>
+          <input type="hidden" id="editReportId" value="">
+
+          <!-- Date field (Defaulted to today) -->
+          <div class="form-group highlight-box">
+            <div class="field-label-row">
+              <label for="reportDate">
+                <strong>Date</strong>
+                <span class="required-indicator">*</span>
+              </label>
+              <span class="label-hint">Defaulted to today</span>
+            </div>
+            <div class="date-input-container">
+              <input 
+                type="date" 
+                id="reportDate" 
+                name="reportDate" 
+                class="form-control" 
+                required
+              >
+              <button type="button" id="todayDateBtn" class="btn btn-secondary-sm" title="Set to Today">
+                Today
+              </button>
+            </div>
+            <div class="input-annotation" id="formattedDatePreview">Format in report: DD/MM/YY</div>
+          </div>
+
+          <div class="form-section-title">
+            <span>Pay1 Details</span>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- Pay1 Billing -->
+            <div class="form-group">
+              <label for="pay1">Pay1</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">₹</span>
+                <input 
+                  type="text" 
+                  id="pay1" 
+                  name="pay1" 
+                  class="form-control" 
+                  placeholder="e.g. 52865400"
+                  autocomplete="off"
+                >
+              </div>
+              <div class="number-readable" id="pay1Readable"></div>
+            </div>
+
+            <!-- Pay1 Profit -->
+            <div class="form-group">
+              <label for="pay1Profit">Pay1 Profit</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">₹</span>
+                <input 
+                  type="text" 
+                  id="pay1Profit" 
+                  name="pay1Profit" 
+                  class="form-control profit-input" 
+                  placeholder="e.g. 14900"
+                  autocomplete="off"
+                >
+              </div>
+              <div class="number-readable" id="pay1ProfitReadable"></div>
+            </div>
+          </div>
+
+          <div class="form-section-title">
+            <span>Southpay Billing Details</span>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- Southpay Billing -->
+            <div class="form-group">
+              <label for="southpayBilling">Southpay Billing</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">₹</span>
+                <input 
+                  type="text" 
+                  id="southpayBilling" 
+                  name="southpayBilling" 
+                  class="form-control" 
+                  placeholder="e.g. 336000"
+                  autocomplete="off"
+                >
+              </div>
+              <div class="number-readable" id="southpayBillingReadable"></div>
+            </div>
+
+            <!-- Southpay Profit -->
+            <div class="form-group">
+              <label for="southpayProfit">Southpay Profit</label>
+              <div class="input-with-affix">
+                <span class="input-prefix">₹</span>
+                <input 
+                  type="text" 
+                  id="southpayProfit" 
+                  name="southpayProfit" 
+                  class="form-control profit-input" 
+                  placeholder="e.g. 1300"
+                  autocomplete="off"
+                >
+              </div>
+              <div class="number-readable" id="southpayProfitReadable"></div>
+            </div>
+          </div>
+
+          <!-- Total Profit (Auto Calculated) -->
+          <div class="form-group total-profit-box">
+            <div class="field-label-row">
+              <label for="totalProfit">
+                <strong>Total Profit</strong>
+              </label>
+              <div class="auto-calc-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                <span>Auto Calculated</span>
+              </div>
+            </div>
+            <div class="input-with-affix">
+              <span class="input-prefix">₹</span>
+              <input 
+                type="text" 
+                id="totalProfit" 
+                name="totalProfit" 
+                class="form-control total-profit-input" 
+                placeholder="16200"
+              >
+            </div>
+            <div class="profit-calc-formula" id="profitFormulaHint">Pay1 Profit + Southpay Profit</div>
+          </div>
+
+          <div class="form-section-title">
+            <span>Shortage & Balances</span>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- Yesterday Shortage -->
+            <div class="form-group">
+              <label for="yesterdayShortage">Yesterday Shortage</label>
+              <input 
+                type="text" 
+                id="yesterdayShortage" 
+                name="yesterdayShortage" 
+                class="form-control" 
+                placeholder="Leave blank or enter amount / details"
+                autocomplete="off"
+              >
+              <div class="input-annotation">Optional shortage note or amount</div>
+            </div>
+
+            <!-- Amount Available -->
+            <div class="form-group">
+              <label for="amountAvailable">Amount Available</label>
+              <input 
+                type="text" 
+                id="amountAvailable" 
+                name="amountAvailable" 
+                class="form-control" 
+                placeholder="e.g. 53.5L or 53,50,000"
+                autocomplete="off"
+              >
+              <div class="input-annotation">Available cash/bank balance</div>
+            </div>
+          </div>
+
+          <!-- Form Action Buttons -->
+          <div class="form-actions-row">
+            <button type="submit" id="submitBtn" class="btn btn-primary btn-large">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span id="submitBtnText">Submit Daily Report</span>
+            </button>
+            <button type="button" id="cancelEditBtn" class="btn btn-secondary btn-large" style="display: none;">
+              Cancel Edit
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Live Output Preview & Quick Actions -->
+      <section class="card preview-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="step-num">2</span>
+            <h2>Formatted Output Preview</h2>
+          </div>
+          <span class="live-pill">Live Preview</span>
+        </div>
+
+        <!-- Quick Summary Tiles -->
+        <div class="summary-tiles">
+          <div class="tile">
+            <span class="tile-label">Total Billing</span>
+            <span class="tile-value" id="summaryTotalBilling">₹ 0</span>
+          </div>
+          <div class="tile highlight">
+            <span class="tile-label">Total Profit</span>
+            <span class="tile-value" id="summaryTotalProfit">₹ 0</span>
+          </div>
+          <div class="tile">
+            <span class="tile-label">Available</span>
+            <span class="tile-value" id="summaryAmountAvailable">-</span>
+          </div>
+        </div>
+
+        <div class="preview-box-container">
+          <div class="preview-box-header">
+            <div class="window-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <span class="window-title">Exact Report Text</span>
+            <span class="copy-badge" id="copiedBadge">Copied!</span>
+          </div>
+          <pre id="reportPreviewText" class="report-preview-text"></pre>
+        </div>
+
+        <!-- Output Action Buttons -->
+        <div class="preview-actions">
+          <button type="button" id="copyReportBtn" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy Text</span>
+          </button>
+
+          <button type="button" id="whatsappShareBtn" class="btn btn-whatsapp">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.41a8.175 8.175 0 0 1 2.4 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.17 8.17 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.24-.75-.67-1.25-1.49-1.4-1.74-.14-.25-.02-.39.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.32-.02-.45-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.11-.22-.17-.47-.3z"/>
+            </svg>
+            <span>WhatsApp</span>
+          </button>
+
+          <button type="button" id="downloadTxtBtn" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Save .txt</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Past Reports Table Section -->
+    <section class="card history-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="step-num">3</span>
+          <h2>Saved Reports History</h2>
+          <span class="counter-badge" id="reportCountBadge">0 records</span>
+        </div>
+        <div class="history-toolbar">
+          <input 
+            type="text" 
+            id="searchHistoryInput" 
+            class="form-control search-input" 
+            placeholder="Search by date or numbers..."
+          >
+          <button type="button" id="exportCsvBtn" class="btn btn-outline-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export CSV</span>
+          </button>
+          <button type="button" id="printHistoryBtn" class="btn btn-outline-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span>Print</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="report-table" id="reportsTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Pay1 Billing</th>
+              <th>Pay1 Profit</th>
+              <th>Southpay Billing</th>
+              <th>Southpay Profit</th>
+              <th>Total Profit</th>
+              <th>Yesterday Shortage</th>
+              <th>Amount Available</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reportsTableBody">
+            <tr class="empty-row">
+              <td colspan="9">No reports recorded yet. Fill out the form above and click "Submit Daily Report".</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Notification Toast -->
+    <div id="toastNotification" class="toast">
+      <span class="toast-message" id="toastMessage">Saved successfully</span>
+    </div>
+
+    <!-- Quick Modal for Viewing Details -->
+    <div id="viewModal" class="modal-backdrop" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Daily Report Details</h3>
+          <button type="button" class="modal-close" id="modalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <pre id="modalReportText" class="modal-pre"></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="modalCopyBtn" class="btn btn-primary">Copy Text</button>
+          <button type="button" id="modalCloseBtn2" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
