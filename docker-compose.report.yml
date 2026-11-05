@@ -1,0 +1,28 @@
+# Standalone deploy for the daily-report form on report.southpaytn.in.
+# Runs independently of the main SouthPay money stack, but joins its Docker
+# network so the existing nginx can proxy to it by the name "report".
+#   cd /opt/southpay-report && docker compose -f docker-compose.report.yml up -d --build
+name: southpay-report
+
+services:
+  report:
+    build: .
+    image: southpay-report:latest
+    container_name: report
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    volumes:
+      - report-data:/app/data      # keeps reports.json + draft.json across restarts
+    networks:
+      - southpay_default
+    mem_limit: 128m
+    pids_limit: 100
+
+networks:
+  southpay_default:
+    external: true                 # the network created by the main southpay stack
+
+volumes:
+  report-data:

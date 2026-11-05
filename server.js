@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'reports.json');
+const DRAFT_FILE = path.join(DATA_DIR, 'draft.json');
 
 // Ensure data directory and file exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -50,7 +51,7 @@ app.get('/api/reports', (req, res) => {
 
 // POST new report
 app.post('/api/reports', (req, res) => {
-  const { date, pay1, pay1Profit, southpayBilling, southpayProfit, totalProfit, yesterdayShortage, amountAvailable, rawReportText } = req.body;
+  const { date, pay1, pay1Profit, pay1Expenditure, southpayBilling, southpayProfit, southpayExpenditure, totalProfit, yesterdayShortage, amountAvailable, isHoliday, rawReportText } = req.body;
 
   if (!date) {
     return res.status(400).json({ success: false, message: 'Date is required.' });
@@ -62,11 +63,14 @@ app.post('/api/reports', (req, res) => {
     date: date || '',
     pay1: pay1 ?? '',
     pay1Profit: pay1Profit ?? '',
+    pay1Expenditure: pay1Expenditure ?? '',
     southpayBilling: southpayBilling ?? '',
     southpayProfit: southpayProfit ?? '',
+    southpayExpenditure: southpayExpenditure ?? '',
     totalProfit: totalProfit ?? '',
     yesterdayShortage: yesterdayShortage ?? '',
     amountAvailable: amountAvailable ?? '',
+    isHoliday: !!isHoliday,
     rawReportText: rawReportText || ''
   };
 
@@ -110,6 +114,46 @@ app.delete('/api/reports/:id', (req, res) => {
 
   writeReports(reports);
   res.json({ success: true, message: 'Report deleted successfully' });
+});
+
+// ---------- Shared draft (unsaved, in-progress entry) ----------
+// Stored on the server so an unsubmitted entry shows up in any browser/device.
+
+// GET current draft (null if none)
+app.get('/api/draft', (req, res) => {
+  try {
+    if (!fs.existsSync(DRAFT_FILE)) {
+      return res.json({ success: true, data: null });
+    }
+    const raw = fs.readFileSync(DRAFT_FILE, 'utf-8');
+    const draft = raw.trim() ? JSON.parse(raw) : null;
+    res.json({ success: true, data: draft });
+  } catch (err) {
+    console.error('Error reading draft file:', err);
+    res.json({ success: true, data: null });
+  }
+});
+
+// PUT/save draft
+app.put('/api/draft', (req, res) => {
+  try {
+    fs.writeFileSync(DRAFT_FILE, JSON.stringify(req.body || {}, null, 2), 'utf-8');
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error writing draft file:', err);
+    res.status(500).json({ success: false, message: 'Failed to save draft' });
+  }
+});
+
+// DELETE draft (after submit or reset)
+app.delete('/api/draft', (req, res) => {
+  try {
+    if (fs.existsSync(DRAFT_FILE)) fs.unlinkSync(DRAFT_FILE);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting draft file:', err);
+    res.status(500).json({ success: false, message: 'Failed to clear draft' });
+  }
 });
 
 // Health check

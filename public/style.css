@@ -881,30 +881,275 @@ label {
     background: #fff;
     color: #000;
     padding: 0;
+    overflow: visible !important;
   }
-  .app-header, .form-card, .preview-actions, .history-toolbar, #themeToggleBtn, .btn {
+  .app-header, .main-content, .history-toolbar, .range-selector,
+  .custom-range, .search-input, .drawer-backdrop, .drawer-header, .btn {
     display: none !important;
   }
-  .main-layout {
-    display: block;
-  }
-  .preview-card {
-    border: 1px solid #ccc;
-    box-shadow: none;
-    page-break-inside: avoid;
-  }
-  .report-preview-text {
-    background: #fff;
-    color: #000;
-    border: 1px solid #ccc;
-  }
-  .history-card {
+  /* Print the Recent Bills drawer contents as a normal page */
+  .drawer {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
     box-shadow: none;
     border: none;
-    page-break-before: always;
   }
-  .report-table th, .report-table td {
+  .bill-item {
     border: 1px solid #ddd;
+    page-break-inside: avoid;
     color: #000;
   }
+  .bill-profit { color: #000; }
+}
+
+/* ===== Main content (report form only) ===== */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+/* ===== Recent Bills drawer (hamburger) ===== */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease;
+  z-index: 60;
+}
+.drawer-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 380px;
+  max-width: 88vw;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -8px 0 28px rgba(2, 6, 23, 0.25);
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+}
+.drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+.drawer-header h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drawer-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+/* Prevent the page behind the drawer from scrolling while it's open */
+body.drawer-locked {
+  overflow: hidden;
+}
+
+/* ===== Range selector ===== */
+.range-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.range-btn {
+  flex: 1 1 auto;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, var(--text-muted));
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.range-btn:hover {
+  border-color: var(--border-focus);
+}
+
+.range-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.custom-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-range .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.custom-range-sep {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ===== Range totals ===== */
+.range-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.range-caption {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: center;
+  margin-top: -0.25rem;
+}
+
+/* ===== Bills list ===== */
+.bills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.bills-empty {
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.bill-item {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.75rem;
+  background: var(--bg-hover);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.bill-row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.bill-date {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bill-profit {
+  font-weight: 800;
+  color: var(--success);
+}
+
+.bill-row2 {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.bill-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.bill-actions .table-btn {
+  flex: 1;
+}
+
+/* ===== Mobile view ===== */
+@media (max-width: 640px) {
+  body { padding: 0.75rem; }
+  .app-container { gap: 1rem; }
+
+  .app-header { padding: 0.75rem 0.9rem; }
+  .brand h1 { font-size: 1.15rem; }
+  .subtitle { display: none; }
+  .logo-icon { width: 38px; height: 38px; }
+
+  /* Keep the header compact: connection status moves out of the way */
+  #connectionStatus { display: none; }
+  .header-right { gap: 0.4rem; }
+
+  .card { padding: 1.1rem; }
+
+  /* Stack the submit buttons full-width so they're easy to tap */
+  .form-actions-row { flex-wrap: wrap; }
+  .form-actions-row .btn { flex: 1 1 100%; }
+
+  .drawer { width: 100%; max-width: 100%; }
+
+  .monthly-tiles { grid-template-columns: 1fr 1fr; }
+}
+
+/* ===== Holiday note ===== */
+.holiday-note {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed rgba(245, 158, 11, 0.55);
+  border-radius: var(--radius-sm);
+}
+
+/* ===== Monthly summary card ===== */
+.month-picker {
+  width: auto;
+  min-width: 10rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.monthly-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.monthly-card .range-caption {
+  text-align: left;
+  margin-top: 0.25rem;
 }
